@@ -28,8 +28,7 @@ urls_data = {
 }
 
 def handle_url_validation(file_path):
-  url: str = has_url_field(file_path)
-  if url:
+  if url := has_url_field(file_path):
     if url.startswith("http://") or url.startswith("https://"):
         if is_url_reachable(url):
           urls_data["valid"][file_path] = url
@@ -47,9 +46,7 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
   file_paths = []
 
   for root, _, files in os.walk(domains_directory):
-    for filename in files:
-      file_paths.append(os.path.join(root, filename))
-
+    file_paths.extend(os.path.join(root, filename) for filename in files)
   for file_path in file_paths:
     future = executor.submit(handle_url_validation, file_path)
 
